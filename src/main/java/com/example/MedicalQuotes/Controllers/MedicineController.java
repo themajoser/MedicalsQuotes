@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.MedicalQuotes.Dto.AppointmentDTO;
+import com.example.MedicalQuotes.Dto.MedicineDTO;
 import com.example.MedicalQuotes.Dto.MedicineDTO;
 import com.example.MedicalQuotes.Services.MedicineService;
 
@@ -58,9 +58,26 @@ public class MedicineController {
 	}
 
 	@PutMapping("/medicines/{id}")
-	public MedicineDTO updateMedicine(@RequestBody MedicineDTO medicine, @PathVariable Long id) {
-
-		return medicineService.updateMedicine(medicine, id);
+	public ResponseEntity<?> updateMedicine(@RequestBody MedicineDTO medicineDTO, @PathVariable Long id) {
+		Map<String, Object> response=new HashMap<>();
+		MedicineDTO	medicineC=null;
+		try {
+			medicineC= medicineService.updateMedicine(medicineDTO, id);
+		}catch(DataAccessException e) {
+			response.put("mensaje", "Error! No se ha podido guardar en la base de datos");
+			response.put("error",e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		if(medicineC == null) {
+			response.put("mensaje", "No se ha encontrado el  medicamento, revise los valores obligatorio o intentelo más tarde");
+			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		response.put("mensaje", "El medicamento ha sido actulizado con éxito!");
+		response.put("medicine", medicineC);
+		
+		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
+		
+	
 
 	}
 

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.MedicalQuotes.Dto.DoctorDTO;
-import com.example.MedicalQuotes.Dto.PatientDTO;
+import com.example.MedicalQuotes.Dto.DoctorDTO;
 import com.example.MedicalQuotes.Services.DoctorService;
 
 @RestController
@@ -37,9 +37,8 @@ public class DoctorController {
 
 	}
 
-
 	@PostMapping("/doctors/create")
-	public ResponseEntity<?> createPatient(@RequestBody DoctorDTO doctor) {
+	public ResponseEntity<?> createDoctor(@RequestBody DoctorDTO doctor) {
 		Map<String, Object> response=new HashMap<>();
 		DoctorDTO	doctorC=null;
 		try {
@@ -49,17 +48,41 @@ public class DoctorController {
 			response.put("error",e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		if(doctorC == null) {
+			response.put("mensaje", "No se ha podido crear el doctor");
+			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 		
 			response.put("mensaje", "El doctor ha sido creado con éxito!");
 			response.put("doctor", doctorC);
-			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED); 
+			
+			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
+ 
 
 	}
 
-	@PutMapping("/doctors/{id}")
-	public DoctorDTO updateDoctor(@RequestBody DoctorDTO doctor, @PathVariable Long id) {
 
-		return doctorService.updateDoctor(doctor, id);
+	@PutMapping("/doctors/{id}")
+	public ResponseEntity<?> updateDoctor(@RequestBody DoctorDTO doctorDTO, @PathVariable Long id) {
+		Map<String, Object> response=new HashMap<>();
+		DoctorDTO	doctorC=null;
+		try {
+			doctorC= doctorService.updateDoctor(doctorDTO, id);
+		}catch(DataAccessException e) {
+			response.put("mensaje", "Error! No se ha podido guardar en la base de datos");
+			response.put("error",e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		if(doctorC == null) {
+			response.put("mensaje", "No se ha encontrado el doctor, revise los valores obligatorio o intentelo más tarde");
+			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		response.put("mensaje", "El doctor ha sido actulizado con éxito!");
+		response.put("doctor", doctorC);
+		
+		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
+		
+	
 
 	}
 

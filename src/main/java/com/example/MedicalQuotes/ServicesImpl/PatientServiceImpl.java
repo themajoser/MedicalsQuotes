@@ -100,7 +100,7 @@ public class PatientServiceImpl implements PatientService {
 		if (patient.getLogin() != null) {
 			patientBBDD.setLogin(patient.getLogin());
 		}
-		if (patient.getPassword() != null) {
+		if (!patient.getPassword().isEmpty()   ) {
 			patientBBDD.setPassword(patient.getPassword());
 		}
 		if (patient.getDate_of_birth() != null) {

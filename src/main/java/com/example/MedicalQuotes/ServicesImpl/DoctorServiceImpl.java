@@ -90,7 +90,7 @@ public class DoctorServiceImpl implements DoctorService {
 		if (doctor.getLogin() != null) {
 			doctorBBDD.setLogin(doctor.getLogin());
 		}
-		if (doctor.getPassword() != null) {
+		if (!doctor.getPassword().isEmpty()   ) {
 			doctorBBDD.setPassword(doctor.getPassword());
 		}
 		if (doctor.getDate_of_birth() != null) {

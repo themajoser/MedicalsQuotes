@@ -38,29 +38,52 @@ public class AppointmentController {
 	}
 
 
-	
 	@PostMapping("/appointments/create")
-	public ResponseEntity<?> createPatient(@RequestBody AppointmentDTO appointment) {
+	public ResponseEntity<?> createAppointment(@RequestBody AppointmentDTO appointment) {
 		Map<String, Object> response=new HashMap<>();
 		AppointmentDTO	appointmentC=null;
 		try {
-			appointmentC=appointmentService.createAppointment(appointment);
+		appointmentC=appointmentService.createAppointment(appointment);
 		}catch(DataAccessException e) {
 			response.put("mensaje", "Error al realizar el insert");
 			response.put("error",e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		if(appointmentC == null) {
+			response.put("mensaje", "No se ha podido crear el appointment");
+			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 		
-			response.put("mensaje", "La cita ha sido creado con éxito!");
+			response.put("mensaje", "El appointment ha sido creado con éxito!");
 			response.put("appointment", appointmentC);
-			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED); 
+			
+			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
+ 
 
 	}
 
+
 	@PutMapping("/appointments/{id}")
-	public AppointmentDTO updateAppointment(@RequestBody AppointmentDTO appointment, @PathVariable Long id) {
-			System.out.println(appointment.getMedicines().size());
-		return appointmentService.updateAppointment(appointment, id);
+	public ResponseEntity<?> updateAppointment(@RequestBody AppointmentDTO appointmentDTO, @PathVariable Long id) {
+		Map<String, Object> response=new HashMap<>();
+		AppointmentDTO	appointmentC=null;
+		try {
+			appointmentC= appointmentService.updateAppointment(appointmentDTO, id);
+		}catch(DataAccessException e) {
+			response.put("mensaje", "Error! No se ha podido guardar en la base de datos");
+			response.put("error",e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		if(appointmentC == null) {
+			response.put("mensaje", "No se ha encontrado la cita, revise los valores obligatorio o intentelo más tarde");
+			return new ResponseEntity<Map<String,Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		response.put("mensaje", "La cita ha sido actulizado con éxito!");
+		response.put("appointment", appointmentC);
+		
+		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
+		
+	
 
 	}
 

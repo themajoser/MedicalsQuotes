@@ -44,7 +44,6 @@ public class PatientController {
 	public ResponseEntity<?> createPatient(@RequestBody PatientDTO patient) {
 		Map<String, Object> response=new HashMap<>();
 		PatientDTO	patientC=null;
-		System.out.println("hola");
 		try {
 		patientC=patientService.createPatient(patient);
 		}catch(DataAccessException e) {

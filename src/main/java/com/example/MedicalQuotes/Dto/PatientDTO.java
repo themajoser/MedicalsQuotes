@@ -34,7 +34,7 @@ public class PatientDTO {
 	@NotBlank(message = "login must be required")
 	private String login;
 
-	@ApiModelProperty(required = true)
+	@ApiModelProperty(required = false)
 	@JsonProperty("password")
 	@NotBlank(message = "password must be required")
 	private String password;
